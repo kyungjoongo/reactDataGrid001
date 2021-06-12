@@ -57,7 +57,6 @@ export default class App extends React.Component {
                     rowGetter={this.rowGetter}
                     rowsCount={this.state.rows.length}
                     minHeight={500}
-                    className={"rdg-light"}
                     enableCellSelect={true}
                     cellRangeSelection={{
                         onStart: args => {
