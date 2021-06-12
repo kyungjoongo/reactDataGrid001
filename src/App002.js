@@ -1,83 +1,71 @@
-import React, {useState} from "react";
-import ReactDOM from "react-dom";
-import ReactDataGrid from "react-data-grid";
-import './App.css'
-const defaultColumnProperties = {
-    sortable: true,
-};
+import _ from 'lodash';
+import React from 'react';
+import Datasheet, {Sheet} from './react-data-sheet/src/index';
+import './sheet.css';
 
-export default class App extends React.Component {
+export default class BasicSheet extends React.Component {
     constructor(props) {
         super(props);
-        this._columns = [
-            {
-                key: "id",
-                name: "ID",
-                sortDescendingFirst: true
-            },
-            {
-                key: "title",
-                name: "Title",
-                editable: true,
-            },
-            {
-                key: "count",
-                name: "Count",
-                editable: true,
-            }
-        ]
-
-        let rows = [];
-        for (let i = 1; i < 1000; i++) {
-            rows.push({
-                id: i,
-                title: "Title " + i,
-                count: i * 1000
-            });
-        }
-        this.state = {rows, selectedIndexes: []};
+        this.state = {
+            grid: [
+                [
+                    {readOnly: true, value: ''},
+                    {value: 'A', readOnly: true, width: 300},
+                    {value: 'B', readOnly: true, width: 300},
+                    {value: 'C', readOnly: true, width: 300},
+                    {value: 'D', readOnly: true, width: 300},
+                ],
+                [
+                    {readOnly: true, value: 1},
+                    {value: 1},
+                    {value: 3},
+                    {value: 3},
+                    {value: 3},
+                ],
+                [
+                    {readOnly: true, value: 2},
+                    {value: 2},
+                    {value: 4},
+                    {value: 4},
+                    {value: 4},
+                ],
+                [
+                    {readOnly: true, value: 3},
+                    {value: 1},
+                    {value: 3},
+                    {value: 3},
+                    {value: 3},
+                ],
+                [
+                    {readOnly: true, value: 4},
+                    {value: 2},
+                    {value: 4},
+                    {value: 4},
+                    {value: 4},
+                ],
+            ],
+        };
     }
 
-    rowGetter = i => {
-        return this.state.rows[i];
+    valueRenderer = cell => cell.value;
+    onCellsChanged = changes => {
+        const grid = this.state.grid;
+        changes.forEach(({cell, row, col, value}) => {
+            grid[row][col] = {...grid[row][col], value};
+        });
+        this.setState({grid});
     };
-
+    onContextMenu = (e, cell, i, j) =>
+        cell.readOnly ? e.preventDefault() : null;
 
     render() {
-
-        const rowText = this.state.selectedIndexes.length === 1 ? "row" : "rows";
         return (
-            <div>
-        <span>
-          {this.state.selectedIndexes.length} {rowText} selected
-        </span>
-                <ReactDataGrid
-                    rowKey="id"
-                    columns={this._columns}
-                    rowGetter={this.rowGetter}
-                    rowsCount={this.state.rows.length}
-                    minHeight={500}
-                    enableCellSelect={true}
-                    cellRangeSelection={{
-                        onStart: args => {
-                            console.info("temp====>", args);
-                        },
-                        onUpdate: args => {
-                            console.info("onUpdate====>", args);
-
-                        },
-                        onComplete: args => {
-
-                        }
-                    }}
-                />
-                <div style={{height: 50}}/>
-                <div style={{margin: 50, borderWidth: 20, borderStyle: 'solid'}}>
-                    <pre>import ReactDataGrid from "react-data-grid";</pre>
-                </div>
-            </div>
+            <Datasheet
+                data={this.state.grid}
+                valueRenderer={this.valueRenderer}
+                onContextMenu={this.onContextMenu}
+                onCellsChanged={this.onCellsChanged}
+            />
         );
     }
 }
-
-
